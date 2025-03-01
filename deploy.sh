@@ -68,6 +68,7 @@ for folder in "${folders[@]}"; do
     echo "Copied $folder from $target_folder to $share_folder"
   fi
 done
+chmod -R 777 "$share_folder/storage/framework"
 
 # Symlink the folders to the target_folder, overriding if they exist
 for folder in "${folders[@]}"; do
