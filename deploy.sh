@@ -53,22 +53,26 @@ fi
 if [ ! -f "$share_folder/.env" ]; then
   cp "$target_folder/.env.example" "$share_folder/.env"
   echo ".env file created from .env.example"
+  ln -sfn "$share_folder/.env" "$target_folder/.env"
+  /usr/bin/php8.3 "$target_folder/artisan" key:generate
+  echo "Symlinked $share_folder/.env to $target_folder/.env"
+else
+  ln -sfn "$share_folder/.env" "$target_folder/.env"
+  echo "Symlinked $share_folder/.env to $target_folder/.env"
 fi
 rm -f "$target_folder/.env.example"
-
-# Symlink the .env file from the share folder to the target folder
-ln -sfn "$share_folder/.env" "$target_folder/.env"
-echo "Symlinked $share_folder/.env to $target_folder/.env"
 
 # Check if the required folders exist, copy from target_folder if they do not
 folders=("storage/app" "storage/logs")
 for folder in "${folders[@]}"; do
   if [ ! -d "$share_folder/$folder" ]; then
-    mkdir -p -m 777 "$share_folder/$folder"
+    mkdir -p -m 775 "$share_folder/$folder"
+    chown -R :www-data "$share_folder/$folder"
     echo "Copied $folder from $target_folder to $share_folder"
   fi
 done
-chmod -R 777 "$target_folder/storage/framework"
+chmod -R 775 "$target_folder/storage/framework"
+chown -R :www-data "$target_folder/storage/framework"
 
 # Symlink the folders to the target_folder, overriding if they exist
 for folder in "${folders[@]}"; do
