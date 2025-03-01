@@ -42,7 +42,7 @@ jobs:
           path: |
             public/build
             vendor
-  
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
