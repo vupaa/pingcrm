@@ -52,7 +52,6 @@ fi
 # Check if .env file exists, create from .env.example if it does not
 if [ ! -f "$share_folder/.env" ]; then
   cp "$target_folder/.env.example" "$share_folder/.env"
-  /usr/bin/php8.3 "$target_folder/artisan" key:generate
   echo ".env file created from .env.example"
 fi
 rm -f "$target_folder/.env.example"
