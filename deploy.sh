@@ -63,7 +63,7 @@ echo "Symlinked $share_folder/.env to $target_folder/.env"
 folders=("storage/app" "storage/logs")
 for folder in "${folders[@]}"; do
   if [ ! -d "$share_folder/$folder" ]; then
-    mkdir -p "$share_folder/$folder"
+    mkdir -p -m 777 "$share_folder/$folder"
     echo "Copied $folder from $target_folder to $share_folder"
   fi
 done
@@ -82,7 +82,7 @@ done
 # Run php artisan optimize and php artisan migrate on the target folder
 cd "$target_folder"
 php artisan optimize
-php artisan migrate --force --quiet
+php artisan migrate --force --graceful
 echo "Run php artisan optimize and php artisan migrate on $target_folder"
 
 # Symlink the target folder to the release folder
