@@ -36,7 +36,7 @@ jobs:
           quiet: "yes"
           args: "--ignore-platform-reqs --no-interaction --no-progress --no-suggest --prefer-dist"
       - name: Save build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ github.run_id }}
           path: |
@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts-${{ github.run_id }}
           path: .

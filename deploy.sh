@@ -91,8 +91,9 @@ cd "$base_folder"
 releases=($(ls -d */ | grep -o '[0-9]*' | sort -n))
 if [ ${#releases[@]} -gt 2 ]; then
   for ((i=0; i<${#releases[@]}-2; i++)); do
-    rm -rf "${base_folder}${releases[i]}"
-    echo "Removed old release folder: ${base_folder}${releases[i]}"
+    $remove_release_folder="$base_folder/${releases[i]}"
+    rm -rf "$remove_release_folder"
+    echo "Removed old release folder: $remove_release_folder"
   done
 fi
 
