@@ -34,7 +34,7 @@ jobs:
           php_version: "8.3"
           version: "2.x"
           quiet: "yes"
-          args: "--ignore-platform-reqs --no-interaction --no-progress --no-suggest --prefer-dist"
+          args: "--ignore-platform-reqs --no-dev --no-interaction --no-progress --no-suggest --prefer-dist"
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -64,7 +64,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_KNOW_HOST }}
           TARGET: ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}
           EXCLUDE:
-            "/tests/, /php*, /resources/js/, /resources/css/, /resources/less/, /*.md, /node_modules/, /*.js, /*package*, Procfile"
+            "/tests/, /php*, /resources/js/, /resources/css/, /resources/less/, /*.md, /node_modules/, /*.js, /*.png, /*package*, Procfile"
       - uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
