@@ -54,6 +54,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            chmod +x ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh
+            chmod 700 ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh
             ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh ${{ vars.BASE_FOLDER }} ${{ vars.TEMP_FOLDER }} ${{ vars.RELEASE_FOLDER }}
             rm ${{ vars.BASE_FOLDER }}${{ vars.RELEASE_FOLDER }}/deploy.sh
