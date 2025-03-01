@@ -34,7 +34,7 @@ jobs:
           php_version: "8.3"
           version: "2.x"
           quiet: "yes"
-          args: "--ignore-platform-reqs --no-dev --no-interaction --no-progress --no-suggest --prefer-dist"
+          args: "--ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --no-suggest --prefer-dist"
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
