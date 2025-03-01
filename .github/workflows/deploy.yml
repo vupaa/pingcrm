@@ -46,7 +46,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_KNOW_HOST }}
           TARGET: ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}
           EXCLUDE:
-            "/tests/, /DOCKER*, /Docker*, /docker*, /output.log, /phpunit.xml, /resources/js/, /resources/css/, /resources/less/, /docker-compose*, /*.md, /node_modules"
+            "/tests/, /DOCKER*, /Docker*, /docker*, /output.log, /phpunit.xml, /resources/js/, /resources/css/, /resources/less/, /docker-compose*, /*.md, /node_modules/"
       - uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -56,4 +56,4 @@ jobs:
           script: |
             chmod +x ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh
             ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh ${{ vars.BASE_FOLDER }} ${{ vars.TEMP_FOLDER }} ${{ vars.RELEASE_FOLDER }}
-            rm ${{ vars.RELEASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh
+            rm ${{ vars.BASE_FOLDER }}${{ vars.RELEASE_FOLDER }}/deploy.sh

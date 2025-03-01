@@ -55,6 +55,10 @@ if [ ! -f "$share_folder/.env" ]; then
   echo ".env file created from .env.example"
 fi
 
+# Symlink the .env file from the share folder to the target folder
+ln -sf "$share_folder/.env" "$target_folder/.env"
+echo "Symlinked $share_folder/.env to $target_folder/.env"
+
 # Check if the required folders exist, copy from target_folder if they do not
 folders=("storage/app" "storage/logs")
 for folder in "${folders[@]}"; do
