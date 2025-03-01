@@ -73,6 +73,7 @@ for folder in "${folders[@]}"; do
 done
 chmod -R 775 "$target_folder/storage/framework/views"
 chown -R :www-data "$target_folder/storage/framework/views"
+ln -sfn "$share_folder/storage/app/public" "$target_folder/public/storage"
 
 # Symlink the folders to the target_folder, overriding if they exist
 for folder in "${folders[@]}"; do
@@ -86,7 +87,6 @@ for folder in "${folders[@]}"; do
 done
 
 # Run php artisan optimize and php artisan migrate on the target folder
-/usr/bin/php8.3 "$target_folder/artisan" storage:link
 /usr/bin/php8.3 "$target_folder/artisan" optimize
 /usr/bin/php8.3 "$target_folder/artisan" migrate --force --graceful
 echo "Run php artisan optimize and php artisan migrate on $target_folder"
