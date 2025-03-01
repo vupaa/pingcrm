@@ -74,6 +74,9 @@ chmod -R 777 "$target_folder/storage/framework"
 for folder in "${folders[@]}"; do
   target_path="$target_folder/$folder"
   share_path="$share_folder/$folder"
+  if [ -d "$target_path" ]; then
+    rm -rf "$target_path"
+  fi
   ln -sfn "$share_path" "$target_path"
   echo "Symlinked $share_path to $target_path"
 done
