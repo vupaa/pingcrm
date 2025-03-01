@@ -63,6 +63,7 @@ echo "Symlinked $share_folder/.env to $target_folder/.env"
 folders=("storage/app" "storage/logs")
 for folder in "${folders[@]}"; do
   if [ ! -d "$share_folder/$folder" ]; then
+    mkdir -p "$share_folder/$folder"
     cp -r "$target_folder/$folder" "$share_folder/$folder"
     echo "Copied $folder from $target_folder to $share_folder"
   fi
