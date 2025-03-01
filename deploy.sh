@@ -63,7 +63,7 @@ fi
 rm -f "$target_folder/.env.example"
 
 # Check if the required folders exist, copy from target_folder if they do not
-folders=("storage/app" "storage/logs")
+folders=("storage/app" "storage/logs" "framework/sessions", "framework/cache")
 for folder in "${folders[@]}"; do
   if [ ! -d "$share_folder/$folder" ]; then
     mkdir -p -m 775 "$share_folder/$folder"
