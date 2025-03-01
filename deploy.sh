@@ -56,7 +56,7 @@ if [ ! -f "$share_folder/.env" ]; then
 fi
 
 # Symlink the .env file from the share folder to the target folder
-ln -sf "$share_folder/.env" "$target_folder/.env"
+ln -sfn "$share_folder/.env" "$target_folder/.env"
 echo "Symlinked $share_folder/.env to $target_folder/.env"
 
 # Check if the required folders exist, copy from target_folder if they do not
@@ -72,10 +72,7 @@ done
 for folder in "${folders[@]}"; do
   target_path="$target_folder/$folder"
   share_path="$share_folder/$folder"
-  if [ -d "$target_path" ]; then
-    rm -rf "$target_path"
-  fi
-  ln -sf "$share_path" "$target_path"
+  ln -sfn "$share_path" "$target_path"
   echo "Symlinked $share_path to $target_path"
 done
 
@@ -86,7 +83,7 @@ php artisan migrate --force --graceful
 echo "Run php artisan optimize and php artisan migrate on $target_folder"
 
 # Symlink the target folder to the release folder
-ln -sf "$target_folder" "$release_folder"
+ln -sfn "$target_folder" "$release_folder"
 echo "Symlinked $target_folder to $release_folder"
 
 # Keep only the two latest releases
