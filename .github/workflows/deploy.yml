@@ -64,7 +64,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_KNOW_HOST }}
           TARGET: ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}
           EXCLUDE:
-            "/tests/, /php*, /resources/js/, /resources/css/, /resources/less/, /*.md, /node_modules/, /*.js, /*.png, /*package*, Procfile"
+            "/tests/, /php*, /resources/js/, /resources/css/, /resources/less/, /*.md, /node_modules/, /*.js, /*.png, /*package*, Procfile, /*.git*, /.editor*, /.prettier*"
       - uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}

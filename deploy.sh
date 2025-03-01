@@ -54,6 +54,7 @@ if [ ! -f "$share_folder/.env" ]; then
   cp "$target_folder/.env.example" "$share_folder/.env"
   echo ".env file created from .env.example"
 fi
+rm -f "$target_folder/.env.example"
 
 # Symlink the .env file from the share folder to the target folder
 ln -sfn "$share_folder/.env" "$target_folder/.env"
