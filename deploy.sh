@@ -78,7 +78,7 @@ done
 
 # Run php artisan optimize and php artisan migrate on the target folder
 cd "$target_folder"
-php storage:link
+php artisan storage:link
 php artisan optimize
 php artisan migrate --force --graceful
 echo "Run php artisan optimize and php artisan migrate on $target_folder"
