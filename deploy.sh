@@ -29,7 +29,7 @@ if [ ! -d "$temp_folder" ]; then
 fi
 
 # Find the highest numbered folder in the base folder
-highest_number=$(ls -d $base_folder*/ 2>/dev/null | grep -o '[0-9]*' | sort -n | tail -1)
+highest_number=$(ls -d $base_folder/*/ 2>/dev/null | grep -o '[0-9]*' | sort -n | tail -1)
 if [ -z "$highest_number" ]; then
   highest_number=0
 fi
