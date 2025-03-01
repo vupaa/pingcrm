@@ -1,0 +1,99 @@
+#!/bin/bash
+set -e
+
+echo "Start ..."
+
+# Check if the required parameters are set
+base_folder="$1"
+release_folder="$2"
+temp_folder="$3"
+if [ -z "$base_folder" ]; then
+  echo "BASE_FOLDER is not set"
+  exit 1
+fi
+if [ -z "$release_folder" ]; then
+  echo "RELEASE_FOLDER is not set"
+  exit 1
+fi
+if [ -z "$temp_folder" ]; then
+  echo "TEMP_FOLDER is not set"
+  exit 1
+fi
+release_folder="$base_folder$release_folder"
+
+# Check if the release folder exists
+temp_folder="$base_folder$temp_folder"
+if [ ! -d "$temp_folder" ]; then
+  echo "TEMP_FOLDER does not exist, nothing to deploy"
+  exit 1
+fi
+
+# Find the highest numbered folder in the base folder
+highest_number=$(ls -d $base_folder*/ 2>/dev/null | grep -o '[0-9]*' | sort -n | tail -1)
+if [ -z "$highest_number" ]; then
+  highest_number=0
+fi
+
+# Increment the highest number by 1
+new_number=$((highest_number + 1))
+
+# Rename temp_folder to the highest number
+target_folder="$base_folder$new_number"
+mv "$temp_folder" "$target_folder"
+echo "Moved $temp_folder to $target_folder"
+
+# Check if the release folder exists
+share_folder="$base_folder/share"
+if [ ! -d "$share_folder" ]; then
+  mkdir -p "$share_folder"
+  echo "Created share folder: $share_folder"
+fi
+
+# Check if .env file exists, create from .env.example if it does not
+if [ ! -f "$share_folder/.env" ]; then
+  cp "$target_folder/.env.example" "$share_folder/.env"
+  echo ".env file created from .env.example"
+fi
+
+# Check if the required folders exist, copy from target_folder if they do not
+folders=("storage/app" "storage/logs")
+for folder in "${folders[@]}"; do
+  if [ ! -d "$share_folder/$folder" ]; then
+    cp -r "$target_folder/$folder" "$share_folder/$folder"
+    echo "Copied $folder from $target_folder to $share_folder"
+  fi
+done
+
+# Symlink the folders to the target_folder, overriding if they exist
+for folder in "${folders[@]}"; do
+  target_path="$target_folder/$folder"
+  share_path="$share_folder/$folder"
+  if [ -d "$target_path" ]; then
+    rm -rf "$target_path"
+  fi
+  ln -sf "$share_path" "$target_path"
+  echo "Symlinked $share_path to $target_path"
+done
+
+# Run php artisan optimize and php artisan migrate on the target folder
+cd "$target_folder"
+php artisan optimize
+php artisan migrate --force
+echo "Run php artisan optimize and php artisan migrate on $target_folder"
+
+# Symlink the target folder to the release folder
+ln -sf "$target_folder" "$release_folder"
+echo "Symlinked $target_folder to $release_folder"
+
+# Keep only the two latest releases
+cd "$base_folder"
+releases=($(ls -d */ | grep -o '[0-9]*' | sort -n))
+if [ ${#releases[@]} -gt 2 ]; then
+  for ((i=0; i<${#releases[@]}-2; i++)); do
+    rm -rf "${base_folder}${releases[i]}"
+    echo "Removed old release folder: ${base_folder}${releases[i]}"
+  done
+fi
+
+# Remove the temp folder
+echo "Finished"
