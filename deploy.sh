@@ -89,11 +89,11 @@ ln -sfn "$target_folder" "$release_folder"
 echo "Symlinked $target_folder to $release_folder"
 
 # Keep only the two latest releases
-cd "$base_folder"
-releases=($(ls -d */ | grep -o '[0-9]*' | sort -n))
+releases=($(ls -d $base_folder/*/ | grep -o '[0-9]*' | sort -n))
 if [ ${#releases[@]} -gt 2 ]; then
   for ((i=0; i<${#releases[@]}-2; i++)); do
-    $remove_release_folder="$base_folder/${releases[i]}"
+    old_release_folder="${releases[i]}"
+    remove_release_folder="$base_folder/$old_release_folder"
     rm -rf "$remove_release_folder"
     echo "Removed old release folder: $remove_release_folder"
   done
