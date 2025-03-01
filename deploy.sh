@@ -5,8 +5,8 @@ echo "Start ..."
 
 # Check if the required parameters are set
 base_folder="$1"
-release_folder="$2"
-temp_folder="$3"
+temp_folder="$2"
+release_folder="$3"
 if [ -z "$base_folder" ]; then
   echo "BASE_FOLDER is not set"
   exit 1
