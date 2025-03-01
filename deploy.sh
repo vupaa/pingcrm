@@ -38,7 +38,7 @@ fi
 new_number=$((highest_number + 1))
 
 # Rename temp_folder to the highest number
-target_folder="$base_folder$new_number"
+target_folder="$base_folder/$new_number"
 mv "$temp_folder" "$target_folder"
 echo "Moved $temp_folder to $target_folder"
 
