@@ -52,6 +52,7 @@ fi
 # Check if .env file exists, create from .env.example if it does not
 if [ ! -f "$share_folder/.env" ]; then
   cp "$target_folder/.env.example" "$share_folder/.env"
+  /usr/bin/php8.3 "$target_folder/artisan" key:generate
   echo ".env file created from .env.example"
 fi
 rm -f "$target_folder/.env.example"
@@ -82,10 +83,9 @@ for folder in "${folders[@]}"; do
 done
 
 # Run php artisan optimize and php artisan migrate on the target folder
-cd "$target_folder"
-php artisan storage:link
-php artisan optimize
-php artisan migrate --force --graceful
+/usr/bin/php8.3 "$target_folder/artisan" storage:link
+/usr/bin/php8.3 "$target_folder/artisan" optimize
+/usr/bin/php8.3 "$target_folder/artisan" migrate --force --graceful
 echo "Run php artisan optimize and php artisan migrate on $target_folder"
 
 # Symlink the target folder to the release folder
