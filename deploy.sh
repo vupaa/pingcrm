@@ -45,6 +45,12 @@ fi
 # Increment the highest number by 1
 new_release_path=$((latest_release + 1))
 
+# Check if the releases folder exists, create it if it does not
+if [ ! -d "$releases_dir" ]; then
+  mkdir -p "$releases_dir"
+  echo "Created releases folder: $releases_dir"
+fi
+
 # Rename temp_folder to the highest number
 new_release_dir="$releases_dir/$new_release_path"
 mv "$rsync_dir" "$new_release_dir"
