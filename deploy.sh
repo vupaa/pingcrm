@@ -94,8 +94,8 @@ for folder in "${folders[@]}"; do
   if [ -d "$new_sub_dir" ]; then
     rm -rf "$new_sub_dir"
   fi
-  ln -sfn "$new_sub_dir" "$shared_sub_dir"
-  echo "Symlinked $new_sub_dir to $shared_sub_dir"
+  ln -sfn "$shared_sub_dir" "$new_sub_dir"
+  echo "Symlinked $shared_sub_dir to $new_sub_dir"
 done
 
 # Symlink the storage folder to the release folder
