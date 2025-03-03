@@ -78,7 +78,7 @@ fi
 rm -f "$new_release_dir/.env.example"
 
 # Create the shared folders and symlink them to the release folder
-folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache" "storage/framework/views")
+folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache")
 for folder in "${folders[@]}"; do
   # Create the shared folders
   shared_sub_dir="$shared_dir/$folder"
@@ -97,6 +97,13 @@ for folder in "${folders[@]}"; do
   ln -sfn "$shared_sub_dir" "$new_sub_dir"
   echo "Symlinked $shared_sub_dir to $new_sub_dir"
 done
+
+# Create the shared views folder and symlink it to the release folder
+$view_dir="$new_release_dir/storage/framework/views"
+chmod -R 775 "$view_dir"
+chown -R :www-data "$view_dir"
+chmod g+s "$view_dir"
+echo "Created shared folder: $view_dir"
 
 # Symlink the storage folder to the release folder
 ln -sfn "$shared_dir/storage/app/public" "$new_release_dir/public/storage"
