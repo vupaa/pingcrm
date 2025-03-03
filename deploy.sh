@@ -100,7 +100,7 @@ done
 
 # Create the shared views folder and symlink it to the release folder
 view_dir="$new_release_dir/storage/framework/views"
-chmod -R 775 "$view_dir"
+chmod 775 "$view_dir"
 chown -R :www-data "$view_dir"
 chmod g+s "$view_dir"
 echo "Created shared folder: $view_dir"
