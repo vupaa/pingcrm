@@ -80,7 +80,7 @@ rm -f "$new_release_dir/.env.example"
 # Check if the required folders exist in the shared folder, create them if they do not
 folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache", "storage/framework/views")
 for folder in "${folders[@]}"; do
-  $shared_sub_dir="$shared_dir/$folder"
+  shared_sub_dir="$shared_dir/$folder"
   if [ ! -d "$shared_sub_dir" ]; then
     mkdir -p -m 775 "$shared_sub_dir"
     chown -R :www-data "$shared_sub_dir"
