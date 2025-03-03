@@ -77,9 +77,10 @@ else
 fi
 rm -f "$new_release_dir/.env.example"
 
-# Check if the required folders exist in the shared folder, create them if they do not
-folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache", "storage/framework/views")
+# Create the shared folders and symlink them to the release folder
+folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache" "storage/framework/views")
 for folder in "${folders[@]}"; do
+  # Create the shared folders
   shared_sub_dir="$shared_dir/$folder"
   if [ ! -d "$shared_sub_dir" ]; then
     mkdir -p -m 775 "$shared_sub_dir"
@@ -87,21 +88,18 @@ for folder in "${folders[@]}"; do
     chmod g+s "$shared_sub_dir"
     echo "Created shared folder: $shared_sub_dir"
   fi
+
+  # Symlink the shared folders to the release folder
+  new_sub_dir="$new_release_dir/$folder"
+  if [ -d "$new_sub_dir" ]; then
+    rm -rf "$new_sub_dir"
+  fi
+  ln -sfn "$new_sub_dir" "$shared_sub_dir"
+  echo "Symlinked $new_sub_dir to $shared_sub_dir"
 done
 
 # Symlink the storage folder to the release folder
 ln -sfn "$shared_dir/storage/app/public" "$new_release_dir/public/storage"
-
-# Symlink the shared folders to the release folder
-for folder in "${folders[@]}"; do
-  new="$new_release_dir/$folder"
-  shared="$shared_dir/$folder"
-  if [ -d "$new" ]; then
-    rm -rf "$new"
-  fi
-  ln -sfn "$new" "$shared"
-  echo "Symlinked $new to $shared"
-done
 
 # Run php artisan optimize and php artisan migrate on the target folder
 /usr/bin/php8.3 "$new_release_dir/artisan" optimize
