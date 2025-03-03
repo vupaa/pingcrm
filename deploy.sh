@@ -83,10 +83,7 @@ for folder in "${folders[@]}"; do
   # Create the shared folders
   shared_sub_dir="$shared_dir/$folder"
   if [ ! -d "$shared_sub_dir" ]; then
-    mkdir -p -m 775 "$shared_sub_dir"
-    chown -R :www-data "$shared_sub_dir"
-    chmod g+s "$shared_sub_dir"
-    echo "Created shared folder: $shared_sub_dir"
+    mkdir -p -m 755 "$shared_sub_dir"
   fi
 
   # Symlink the shared folders to the release folder
@@ -97,13 +94,6 @@ for folder in "${folders[@]}"; do
   ln -sfn "$shared_sub_dir" "$new_sub_dir"
   echo "Symlinked $shared_sub_dir to $new_sub_dir"
 done
-
-# Create the shared views folder and symlink it to the release folder
-view_dir="$new_release_dir/storage/framework/views"
-chmod 775 "$view_dir"
-chown -R :www-data "$view_dir"
-chmod g+s "$view_dir"
-echo "Created shared folder: $view_dir"
 
 # Symlink the storage folder to the release folder
 ln -sfn "$shared_dir/storage/app/public" "$new_release_dir/public/storage"
