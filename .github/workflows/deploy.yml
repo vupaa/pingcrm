@@ -62,7 +62,7 @@ jobs:
           REMOTE_PORT: ${{ secrets.SSH_PORT }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           REMOTE_HOST: ${{ secrets.SSH_KNOW_HOST }}
-          TARGET: ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}
+          TARGET: ${{ vars.BASE_DIR }}/${{ vars.RSYNC_PATH }}
           EXCLUDE:
             "/tests/, /php*, /resources/js/, /resources/css/, /resources/less/, /*.md, /node_modules/, /*.js, /*.png, /*package*, Procfile, /*.git*, /.editor*, /.prettier*"
       - uses: appleboy/ssh-action@master
@@ -72,6 +72,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            chmod 700 ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh
-            ${{ vars.BASE_FOLDER }}${{ vars.TEMP_FOLDER }}/deploy.sh ${{ vars.BASE_FOLDER }} ${{ vars.TEMP_FOLDER }} ${{ vars.RELEASE_FOLDER }}
-            rm ${{ vars.BASE_FOLDER }}${{ vars.RELEASE_FOLDER }}/deploy.sh
+            chmod 700 ${{ vars.BASE_DIR }}/${{ vars.RSYNC_PATH }}/deploy.sh
+            ${{ vars.BASE_DIR }}/${{ vars.RSYNC_PATH }}/deploy.sh ${{ vars.BASE_DIR }} ${{ vars.RSYNC_PATH }} ${{ vars.RELEASES_PATH }} ${{ vars.CURRENT_PATH }}
+            rm ${{ vars.BASE_DIR }}/${{ vars.CURRENT_PATH }}/deploy.sh

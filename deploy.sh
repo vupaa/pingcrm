@@ -1,110 +1,122 @@
 #!/bin/bash
 set -e
 
-echo "Start ..."
+echo "Start deploy.sh"
 
 # Check if the required parameters are set
-base_folder="$1"
-temp_folder="$2"
-release_folder="$3"
-if [ -z "$base_folder" ]; then
-  echo "BASE_FOLDER is not set"
+base_dir="$1"
+rsync_path="$2"
+releases_path="$3"
+current_path="$4"
+if [ -z "$base_dir" ]; then
+  echo "base_dir is not set"
   exit 1
 fi
-if [ -z "$release_folder" ]; then
-  echo "RELEASE_FOLDER is not set"
+if [ -z "$rsync_path" ]; then
+  echo "rsync_path is not set"
   exit 1
 fi
-if [ -z "$temp_folder" ]; then
-  echo "TEMP_FOLDER is not set"
+if [ -z "$releases_path" ]; then
+  echo "releases_path is not set"
   exit 1
 fi
-release_folder="$base_folder$release_folder"
+if [ -z "$current_path" ]; then
+  echo "current_path is not set"
+  exit 1
+fi
+
+# Set the target folder
+rsync_dir="$base_dir/$rsync_path"
+releases_dir="$base_dir/$releases_path"
+current_dir="$base_dir/$current_path"
 
 # Check if the release folder exists
-temp_folder="$base_folder$temp_folder"
-if [ ! -d "$temp_folder" ]; then
-  echo "TEMP_FOLDER does not exist, nothing to deploy"
+if [ ! -d "$rsync_dir" ]; then
+  echo "rsync_dir does not exist, nothing to deploy"
   exit 1
 fi
 
 # Find the highest numbered folder in the base folder
-highest_number=$(ls -d $base_folder/*/ 2>/dev/null | grep -o '[0-9]*' | sort -n | tail -1)
-if [ -z "$highest_number" ]; then
-  highest_number=0
+latest_release=$(ls -d $releases_dir/*/ 2>/dev/null | grep -o '[0-9]*' | sort -n | tail -1)
+if [ -z "$latest_release" ]; then
+  latest_release=0
 fi
 
 # Increment the highest number by 1
-new_number=$((highest_number + 1))
+new_release_path=$((latest_release + 1))
 
 # Rename temp_folder to the highest number
-target_folder="$base_folder/$new_number"
-mv "$temp_folder" "$target_folder"
-echo "Moved $temp_folder to $target_folder"
+new_release_dir="$releases_dir/$new_release_path"
+mv "$rsync_dir" "$new_release_dir"
+echo "Moved $rsync_dir to $new_release_dir"
 
 # Check if the release folder exists
-share_folder="$base_folder/share"
-if [ ! -d "$share_folder" ]; then
-  mkdir -p "$share_folder"
-  echo "Created share folder: $share_folder"
+shared_dir="$base_dir/shared"
+if [ ! -d "$shared_dir" ]; then
+  mkdir -p "$shared_dir"
+  echo "Created share folder: $shared_dir"
 fi
 
 # Check if .env file exists, create from .env.example if it does not
-if [ ! -f "$share_folder/.env" ]; then
-  cp "$target_folder/.env.example" "$share_folder/.env"
+if [ ! -f "$shared_dir/.env" ]; then
+  cp "$new_release_dir/.env.example" "$shared_dir/.env"
   echo ".env file created from .env.example"
-  ln -sfn "$share_folder/.env" "$target_folder/.env"
-  /usr/bin/php8.3 "$target_folder/artisan" key:generate
-  echo "Symlinked $share_folder/.env to $target_folder/.env"
+  ln -sfn "$shared_dir/.env" "$new_release_dir/.env"
+  echo "Symlinked $shared_dir/.env to $new_release_dir/.env"
+  /usr/bin/php8.3 "$new_release_dir/artisan" key:generate
+  echo "Generated application key"
 else
-  ln -sfn "$share_folder/.env" "$target_folder/.env"
-  echo "Symlinked $share_folder/.env to $target_folder/.env"
+  ln -sfn "$shared_dir/.env" "$new_release_dir/.env"
+  echo "Symlinked $shared_dir/.env to $new_release_dir/.env"
 fi
-rm -f "$target_folder/.env.example"
+rm -f "$new_release_dir/.env.example"
 
-# Check if the required folders exist, copy from target_folder if they do not
-folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache")
+# Check if the required folders exist in the shared folder, create them if they do not
+folders=("storage/app" "storage/logs" "storage/framework/sessions" "storage/framework/cache", "storage/framework/views")
 for folder in "${folders[@]}"; do
-  if [ ! -d "$share_folder/$folder" ]; then
-    mkdir -p -m 775 "$share_folder/$folder"
-    chown -R :www-data "$share_folder/$folder"
-    echo "Copied $folder from $target_folder to $share_folder"
+  $shared_sub_dir="$shared_dir/$folder"
+  if [ ! -d "$shared_sub_dir" ]; then
+    mkdir -p -m 775 "$shared_sub_dir"
+    chown -R :www-data "$shared_sub_dir"
+    chmod g+s "$shared_sub_dir"
+    echo "Created shared folder: $shared_sub_dir"
   fi
 done
-chmod -R 775 "$target_folder/storage/framework/views"
-chown -R :www-data "$target_folder/storage/framework/views"
-ln -sfn "$share_folder/storage/app/public" "$target_folder/public/storage"
 
-# Symlink the folders to the target_folder, overriding if they exist
+# Symlink the storage folder to the release folder
+ln -sfn "$shared_dir/storage/app/public" "$new_release_dir/public/storage"
+
+# Symlink the shared folders to the release folder
 for folder in "${folders[@]}"; do
-  target_path="$target_folder/$folder"
-  share_path="$share_folder/$folder"
-  if [ -d "$target_path" ]; then
-    rm -rf "$target_path"
+  new="$new_release_dir/$folder"
+  shared="$shared_dir/$folder"
+  if [ -d "$new" ]; then
+    rm -rf "$new"
   fi
-  ln -sfn "$share_path" "$target_path"
-  echo "Symlinked $share_path to $target_path"
+  ln -sfn "$new" "$shared"
+  echo "Symlinked $new to $shared"
 done
 
 # Run php artisan optimize and php artisan migrate on the target folder
-/usr/bin/php8.3 "$target_folder/artisan" optimize
-/usr/bin/php8.3 "$target_folder/artisan" migrate --force --graceful
-echo "Run php artisan optimize and php artisan migrate on $target_folder"
+/usr/bin/php8.3 "$new_release_dir/artisan" optimize
+/usr/bin/php8.3 "$new_release_dir/artisan" migrate --force --graceful
+echo "Run php artisan optimize and php artisan migrate on $new_release_dir"
 
 # Symlink the target folder to the release folder
-ln -sfn "$target_folder" "$release_folder"
-echo "Symlinked $target_folder to $release_folder"
+ln -sfn "$new_release_dir" "$current_dir"
+echo "Symlinked $new_release_dir to $current_dir"
 
 # Keep only the two latest releases
-releases=($(ls -d $base_folder/*/ | grep -o '[0-9]*' | sort -n))
+releases=($(ls -d $releases_dir/*/ | grep -o '[0-9]*' | sort -n))
 if [ ${#releases[@]} -gt 2 ]; then
   for ((i=0; i<${#releases[@]}-2; i++)); do
-    old_release_folder="${releases[i]}"
-    remove_release_folder="$base_folder/$old_release_folder"
-    rm -rf "$remove_release_folder"
-    echo "Removed old release folder: $remove_release_folder"
+    remove_release_path="${releases[i]}"
+    remove_release_dir="$releases_dir/$remove_release_path"
+    rm -rf "$remove_release_dir"
+    echo "Removed old release folder: $remove_release_dir"
   done
 fi
 
 # Remove the temp folder
-echo "Finished"
+echo "Finished deploy.sh"
+exit 0
