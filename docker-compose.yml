@@ -12,6 +12,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - storage_app:/var/www/html/storage/app
     env_file:
       - .env
 
