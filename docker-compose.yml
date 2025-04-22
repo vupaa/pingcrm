@@ -1,5 +1,6 @@
 volumes:
   db:
+  storage_app:
 
 services:
   app:
