@@ -50,9 +50,7 @@ RUN apk add --no-cache \
 # Link PHP binary
 RUN ln -sf /usr/bin/php8.3 /usr/bin/php
 
-# Create non-root user
-RUN groupadd --gid 1000 www && \
-    useradd --uid 1000 --gid 1000 --shell /bin/sh --create-home www
+RUN adduser -D -u 1000 -g 1000 -s /bin/sh www
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --chown=www:www composer*.json .
