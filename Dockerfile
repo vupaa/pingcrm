@@ -53,7 +53,6 @@ RUN ln -sf /usr/bin/php83 /usr/bin/php
 RUN adduser -D -u 1000 -g 1000 -s /bin/sh www
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
-COPY --chown=www:www composer*.json .
 COPY --chown=www:www . .
 
 RUN composer install --optimize-autoloader --no-dev --no-interaction --no-progress --no-suggest --prefer-dist
