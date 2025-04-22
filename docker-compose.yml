@@ -1,0 +1,23 @@
+volumes:
+  db:
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_USER=prd
+      - MYSQL_PASSWORD=52i0UB99X8Wu1qu
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - db

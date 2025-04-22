@@ -1,0 +1,42 @@
+name: Build Docker image
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_save:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: false # Do not push to registry
+          load: true # Load the image into the local Docker daemon
+          tags: ping-crm:latest # Tag for local reference
+          platforms: linux/amd64
+          cache-from: type=gha # Use GitHub Actions cache as source
+          cache-to: type=gha,mode=max # Export cache to GitHub Actions cache
+          outputs: type=docker,dest=/tmp/ping-crm.tar # Output as a tarball
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/ping-crm.tar
+          retention-days: 1

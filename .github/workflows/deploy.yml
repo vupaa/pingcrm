@@ -46,6 +46,7 @@ jobs:
           path: |
             public/build
             vendor
+          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
