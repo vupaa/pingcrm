@@ -48,7 +48,7 @@ RUN apk add --no-cache \
   php83-exif
 
 # Link PHP binary
-RUN ln -sf /usr/bin/php8.3 /usr/bin/php
+RUN ln -sf /usr/bin/php83 /usr/bin/php
 
 RUN adduser -D -u 1000 -g 1000 -s /bin/sh www
 
