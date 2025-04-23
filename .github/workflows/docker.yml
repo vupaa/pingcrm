@@ -38,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-ping-crm
-          path: ping-crm.tar
+          path: /tmp/ping-crm.tar
           retention-days: 1
